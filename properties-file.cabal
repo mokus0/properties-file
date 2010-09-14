@@ -1,0 +1,24 @@
+name:                   properties-file
+version:                0.0.0.1
+stability:              experimental
+
+cabal-version:          >= 1.2
+build-type:             Simple
+
+author:                 James Cook <your email here>
+maintainer:             James Cook <your email here>
+license:                Unspecified
+homepage:               /dev/null
+
+category:               Data, Configuration
+synopsis:               Java \".properties\" files
+description:            Rough implementation of the \"properties\" data
+                        structure and plain text format as popularized by
+                        Java's java.util.Properties class.
+
+Library
+  hs-source-dirs:       src
+  exposed-modules:      Data.Properties
+  other-modules:        Data.Properties.Type
+                        Data.Properties.PlainText
+  build-depends:        base >= 3 && <5, containers, pretty
