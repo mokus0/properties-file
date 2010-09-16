@@ -14,19 +14,16 @@ load = Properties Nothing
      . map (readProperty . splicePropertyLines) 
      . propertyLines 
      . logicalLines 
-     . naturalLines
+     . lines
 
 store :: Maybe String -> Properties -> String
-store c = unNaturalLines
+store c = unlines
         . unLogicalLines
         . unPropertyLines c
         . map (uncurry layoutProperty . writeProperty)
         . M.toList
         . propLocals
 
-
-naturalLines = lines
-unNaturalLines = unlines
 
 data LogicalLine a
     = CommentLine String 
@@ -85,7 +82,7 @@ readProperty (dropWhile isSpace -> l) = (key, unEscape val)
             ('=':rest)              -> dropWhile isSpace rest
             other                   -> other
 
-writeProperty (k,v) = (escape k, map escapeLeadingSpace (wrapValue 60 72 v))
+writeProperty (k,v) = (escape k, map escapeLeadingSpace (wrapText 60 72 v))
 
 layoutProperty key value = lines (show doc)
     where
@@ -107,14 +104,24 @@ escapeLeadingSpace str@(c:_)
     | isSpace c = '\\' : str
 escapeLeadingSpace str = str
 
-wrapValue minWidth maxWidth val = case splitAt maxWidth val of
-    (fits, []) -> [fits]
-    (fits, rest) -> case splitAt minWidth fits of
-        (minPart, extra) -> case break isSpace (reverse extra) of
-            (_, "")
-                -> fits : wrapValue minWidth maxWidth rest 
-            (reverse -> afterSpace, reverse -> beforeSpace)
-                -> (minPart ++ beforeSpace) : wrapValue minWidth maxWidth (afterSpace ++ rest)
+-- Split a string into lines, none longer than maxWidth and none (except 
+-- maybe the last) shorter than minWidth.  Tries as much as possible to 
+-- put the split after a space and before a non-space.  If necessary to 
+-- meet the line-length restrictions, will sometimes split a word.
+--
+-- Assuming I didn't do anything stupid:
+--       @concat (wrapText x y string) == string@.
+wrapText minWidth maxWidth = wrap
+    where
+        wrap [] = []
+        wrap string = case splitAt maxWidth string of
+            (fits, []) -> [fits]
+            (fits, rest) -> case splitAt minWidth fits of
+                (minPart, extra) -> case break isSpace (reverse extra) of
+                    (_, "")
+                        -> fits : wrap rest 
+                    (reverse -> afterSpace, reverse -> beforeSpace)
+                        -> (minPart ++ beforeSpace) : wrap (afterSpace ++ rest)
 
 unCons ('\\':'u':rest) = case rest of
     a:b:c:d:cs  | all isHexDigit [a,b,c,d]  
