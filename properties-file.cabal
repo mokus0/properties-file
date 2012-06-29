@@ -2,12 +2,12 @@ name:                   properties-file
 version:                0.0.0.1
 stability:              experimental
 
-cabal-version:          >= 1.2
+cabal-version:          >= 1.6
 build-type:             Simple
 
-author:                 James Cook <your email here>
-maintainer:             James Cook <your email here>
-license:                Unspecified
+author:                 James Cook <mokus@deepbondi.net>
+maintainer:             James Cook <mokus@deepbondi.net>
+license:                PublicDomain
 homepage:               /dev/null
 
 category:               Data, Configuration
@@ -15,6 +15,10 @@ synopsis:               Java \".properties\" files
 description:            Rough implementation of the \"properties\" data
                         structure and plain text format as popularized by
                         Java's java.util.Properties class.
+
+source-repository head
+  type: git
+  location: git://github.com/mokus0/properties-file.git
 
 Library
   hs-source-dirs:       src
